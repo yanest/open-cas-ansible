@@ -1,0 +1,29 @@
+---
+- name: install yum plugin priorities
+  package:
+    name: yum-plugin-priorities
+    state: "present"
+  register: result
+  until: result is succeeded
+
+- name: 45Drives Repository - Configure 45drives samba repository
+  yum_repository:
+    name: 45drives
+    description: 45Drives $basearch repo
+    gpgcheck: no
+    enabled: yes
+    state: present
+    baseurl: "http://images.45drives.com/ceph/rpm/el{{ ansible_distribution_major_version }}"
+    file: 45drives
+    priority: "1"
+  register: result
+  until: result is success
+
+- name: Install open-cas-linux
+  block:
+    - name: install open-cas-linux and modules
+      package:
+        name: open-cas-linux
+        state: latest
+      register: result
+      until: result is succeeded

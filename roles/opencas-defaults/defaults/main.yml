@@ -1,4 +1,5 @@
 ---
+  opencas_install_source: "rpm" #choice is either git or rpm
   opencas_path: "/tmp/.ansible/opencas/"
   opencas_repo_url: "https://github.com/Open-CAS/open-cas-linux.git"
   opencas_version: "HEAD"
