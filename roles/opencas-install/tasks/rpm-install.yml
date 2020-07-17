@@ -1,12 +1,5 @@
 ---
-- name: install yum plugin priorities
-  package:
-    name: yum-plugin-priorities
-    state: "present"
-  register: result
-  until: result is succeeded
-
-- name: 45Drives Repository - Configure 45drives samba repository
+- name: 45Drives Repository - Configure 45drives repository
   yum_repository:
     name: 45drives
     description: 45Drives $basearch repo

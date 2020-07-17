@@ -10,4 +10,3 @@
           ((opencas_installed_version != opencas_version) and opencas_devices_started))
 
 - include: "{{ opencas_install_source }}-install.yml"
-  when: '{{ ansible_distribution_major_version }} == "CentOS"'
