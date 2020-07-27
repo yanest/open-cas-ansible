@@ -17,32 +17,53 @@
       when: opencas_installed | bool
       become: True
 
-    - name: Clone and checkout Open CAS repository
-      git:
-        repo: "{{ opencas_repo_url }}"
-        dest: "{{ opencas_path }}"
-        version: "{{ opencas_version }}"
-        force: True
-      become: True
+    - name: Remove rpm installation
+      block:
+        - name: unload cas modules
+          modprobe:
+            name: "{{ item }}"
+            state: absent
+          with_items:
+            - cas_cache
+            - cas_disk
 
-    - name: Uninstall Open CAS
-      make:
-        chdir: "{{ opencas_path }}"
-        target: uninstall
-      ignore_errors: True
-      become: True
+        - name: yum remove open-cas-linux
+          package:
+            name: "{{ item }}"
+            state: absent
+          with_items:
+            - open-cas-linux
+            - open-cas-linux-modules
+      when: opencas_install_source == "rpm"
 
-    - name: Check if uninstalled
-      cas:
-        gather_facts: True
-      failed_when: opencas_installed | bool
-      become: True
+    - name: Remove git installation
+      block:
+        - name: Clone and checkout Open CAS repository
+          git:
+            repo: "{{ opencas_repo_url }}"
+            dest: "{{ opencas_path }}"
+            version: "{{ opencas_version }}"
+            force: True
+          become: True
 
-    - name: Remove Open CAS directory
-      file:
-        state: absent
-        force: True
-        path: '{{ opencas_path }}'
-      become: True
+        - name: Uninstall Open CAS
+          make:
+            chdir: "{{ opencas_path }}"
+            target: uninstall
+          ignore_errors: True
+          become: True
 
+        - name: Check if uninstalled
+          cas:
+            gather_facts: True
+          failed_when: opencas_installed | bool
+          become: True
+
+        - name: Remove Open CAS directory
+          file:
+            state: absent
+            force: True
+            path: '{{ opencas_path }}'
+          become: True
+      when: opencas_install_source == "git"
 ...
