@@ -14,6 +14,20 @@
 
 - name: Install open-cas-linux
   block:
+    - name: Remove kernel-debug-devel if installed
+      package:
+        name: kernel-debug-devel
+        state: absent
+      register: result
+      until: result is succeeded
+
+    - name: Install kernel-devel
+      package:
+        name: kernel-devel
+        state: present
+      register: result
+      until: result is succeeded      
+
     - name: install open-cas-linux and modules
       package:
         name: open-cas-linux
