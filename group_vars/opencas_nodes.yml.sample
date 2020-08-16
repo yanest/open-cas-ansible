@@ -1,11 +1,25 @@
 ---
 # This is a sample configuration of Open CAS deployment configuration
 
+# opencas_install_source: "rpm" #choice is either git or rpm
+# opencas_lvm_support: true # add types option to lvm.conf
+
 # List of all cache devices configuration
 opencas_cache_devices:
-  - cache_device: /dev/nvme0n1       # path to device or partition
+  - cache_device: /dev/nvme0n1       # path to cache device
     id: 1                            # id used to corelate cores with cache instances
-    cache_mode: wt                   # caching mode <wt, wb, wa, pt, wo>
+    cache_mode: wb                   # caching mode <wt, wb, wa, pt, wo>
+    force: False                     # [OPTIONAL] Ignore and overwrite existing partition table
+    cleaning_policy: alru            # [OPTIONAL] cleaning policy <alru, acp, nop>
+    promotion_policy: always         # [OPTIONAL] cleaning policy <always, nhit>
+    line_size: 4                     # [OPTIONAL] cache line size <4, 8, 16, 32, 64> [kb]
+    io_class: default.csv            # [OPTIONAL] io classification file name
+                                     # all files used here should be put in
+                                     # roles/opencas-deploy/files/
+
+  - cache_device: /dev/1-10       # path to cache device
+    id: 2                           # id used to corelate cores with cache instances
+    cache_mode: wb                   # caching mode <wt, wb, wa, pt, wo>
     force: False                     # [OPTIONAL] Ignore and overwrite existing partition table
     cleaning_policy: alru            # [OPTIONAL] cleaning policy <alru, acp, nop>
     promotion_policy: always         # [OPTIONAL] cleaning policy <always, nhit>
@@ -18,8 +32,8 @@ opencas_cache_devices:
 opencas_cached_volumes:
     - id: 1                    # id of core device
       cache_id: 1              # id of cache defined in open_cas_cache_devices list
-      cached_volume: /dev/sdc  # path to cached device or partition
+      cached_volume: /dev/1-1  # path to cached device by its alias name
     - id: 2
-      cache_id: 1
-      cached_volume: /dev/sdd
+      cache_id: 2
+      cached_volume: /dev/1-2
 ...

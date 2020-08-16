@@ -1,8 +1,17 @@
 ---
-- hosts: opencas_nodes
+- name: opencas_deploy
+  hosts: opencas_nodes
   roles:
     - role: opencas-defaults
     - role: opencas-install
     - role: opencas-validate
     - role: opencas-deploy
-...
+  
+  tasks:
+    - name: Enable lvm support for cas devices
+      lineinfile:
+        path: /etc/lvm/lvm.conf
+        insertafter: '# types = \[ "fd", 16 ]'
+        line: ' types = [ "cas", 16 ]'
+      when: opencas_lvm_support | bool
+      become: True
