@@ -1,8 +1,29 @@
 ---
-- hosts: opencas_nodes
+- name: opencas_deploy
+  hosts: opencas_nodes
   roles:
     - role: opencas-defaults
     - role: opencas-install
     - role: opencas-validate
     - role: opencas-deploy
-...
+  
+  tasks:
+    - name: Enable lvm support for cas devices
+      lineinfile:
+        path: /etc/lvm/lvm.conf
+        insertafter: '# types = \[ "fd", 16 ]'
+        line: ' types = [ "cas", 16 ]'
+      when: opencas_lvm_support | bool
+      become: True
+
+    - name: get cas device status from each node
+      command: casadm -L
+      register: cas_status
+      changed_when: false
+      run_once: true
+
+    - name: "show cas device status for host {{ ansible_hostname }}"
+      debug:
+        msg: "{{ cas_status.stdout_lines }}"
+      run_once: true
+      when: not cas_status.failed
