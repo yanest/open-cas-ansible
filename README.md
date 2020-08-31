@@ -33,7 +33,7 @@ Gathers custom facts needed for further processing, also in `defaults/main.yml`
 there are some settings used by other roles e.g. version of Open CAS to be installed.
 
 ### opencas-install
-Installs Open CAS software.
+Installs Open CAS software. RPM or git installation option
 
 ### opencas-deploy
 Copies over the IO-class configuration files, validates configuration and deploys
